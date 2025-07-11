@@ -1,0 +1,20 @@
+services:
+  api:
+    build: ./
+    entrypoint: ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm run build && npm start"]
+    container_name: backstage-backend-api
+    volumes:
+      - ./:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: backstage-admin
+      POSTGRES_PASSWORD: backstage-unsafepassword
+      POSTGRES_DB: backstage-db
+    container_name: backstage-db
+    ports:
+      - "5432:5432"

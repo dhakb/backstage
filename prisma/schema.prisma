@@ -7,3 +7,167 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model users {
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  password         String?
+  firstName        String?
+  lastName         String?
+  fullName         String?
+  stripeCustomerId String?
+  keygenUserId     String?
+  fsOrderId        String?
+  affiliateId      String?
+  companyName      String?
+  companyAddress   String?
+  vatNumber        String?
+  tokens           String[]
+  products         String[]
+  licenses         licenses[]
+  logs             logs[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model unverified_users {
+  id              String   @id
+  email           String   @unique
+  firstName       String?
+  lastName        String?
+  trialToActivate String?
+  formType        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model licenses {
+  id          String    @id
+  name        String
+  expiresAt   DateTime?
+  status      String
+  type        String
+  productId   String
+  policyId    String
+  paymentType String?
+  price       String?
+  userId      Int
+  user        users     @relation(fields: [userId], references: [id])
+  product     products  @relation(fields: [productId], references: [id])
+  policy      policies  @relation(fields: [policyId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model products {
+  id        String     @id
+  name      String
+  licenses  licenses[]
+  policies  policies[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model policies {
+  id        String     @id
+  name      String?
+  productId String
+  product   products   @relation(fields: [productId], references: [id])
+  licenses  licenses[]
+}
+
+model checkout_sessions {
+  id                    String      @id
+  totalPrice            Float?
+  products              String[]
+  stripePaymentId       String?
+  stripeSecretSessionId String
+  paypalSecretSessionId String
+  processedAt           DateTime?
+  appliedCoupon         Int?
+  buyerEmail            String?
+  buyerName             String?
+  affiliateId           String?
+  referrer              String?
+  affiliate             affiliates? @relation(fields: [affiliateId], references: [id])
+  coupons               coupons?    @relation(fields: [appliedCoupon], references: [id])
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+model coupons {
+  id                       Int                 @id @default(autoincrement())
+  name                     String?
+  code                     String              @unique
+  percentOff               Float?
+  cutOff                   Float?
+  specificProducts         String[]
+  usageLeft                Int?
+  expiresAt                DateTime?
+  checkout_sessions        checkout_sessions[]
+  type                     String?
+  bypassSale               Boolean             @default(false)
+  description              String?
+  isAffiliateSpecialCoupon Boolean             @default(false)
+  isApproved               Boolean             @default(false)
+  approvalDate             DateTime?
+  affiliateId              String?
+  affiliates               affiliates?         @relation(references: [id], fields: [affiliateId])
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+}
+
+model redeem_codes {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  code      String    @unique
+  products  String[]
+  usageLeft Int?      @default(1)
+  expiresAt DateTime?
+  type      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model affiliates {
+  id                 String              @id
+  firstName          String?
+  lastName           String?
+  artistBrand        String?
+  email              String              @unique
+  paypalEmail        String?             @unique
+  commissionSent     Boolean             @default(false)
+  commissionSentDate DateTime?
+  password           String?
+  youtube            String?
+  instagram          String?
+  facebook           String?
+  twitter            String?
+  linkPaths          String[]
+  promoteWay         String?
+  coupons            coupons[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  checkout_sessions  checkout_sessions[]
+}
+
+model admins {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  password         String?
+  verificationCode String?
+  firstName        String?
+  lastName         String?
+  token            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model logs {
+  id        Int      @id @default(autoincrement())
+  action    String
+  userId    Int
+  user      users?   @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

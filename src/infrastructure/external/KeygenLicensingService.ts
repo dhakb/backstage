@@ -3,6 +3,7 @@ import path from "node:path";
 import axios, { AxiosError } from "axios";
 import { ILicensingService } from "../../application/ports/ILicensingService";
 
+import { config } from "../../config/config";
 
 const {
   KG_PWD,
@@ -10,7 +11,7 @@ const {
   KEYGEN_ACCOUNT_ID,
   KEYGEN_ADMIN_TOKEN,
   KEYGEN_ADMIN_TOKEN_BACKUP
-} = process.env;
+} = config;
 
 type KeygenApiResponse = { data: {} | null, error: {} | null | undefined }
 

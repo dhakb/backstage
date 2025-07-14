@@ -1,4 +1,15 @@
+import { config } from "../../config/config";
 import { createTransport, Transporter } from "nodemailer";
+
+
+const {
+  SIB_USER,
+  SIB_PASS,
+  SG_USER,
+  SG_PASS,
+  CP_USER,
+  CP_PASS
+} = config;
 
 
 export interface EmailTransport {
@@ -10,7 +21,7 @@ export class SendinblueTransport implements EmailTransport {
     return createTransport({
       host: "smtp-relay.sendinblue.com",
       port: 587,
-      auth: {user: process.env.SIB_USER, pass: process.env.SIB_PASS}
+      auth: {user: SIB_USER, pass: SIB_PASS}
     });
   }
 }
@@ -21,7 +32,7 @@ export class SendgridTransport implements EmailTransport {
       host: "smtp.sendgrid.net",
       port: 465,
       secure: true,
-      auth: {user: process.env.SG_USER, pass: process.env.SG_PASS}
+      auth: {user: SG_USER, pass: SG_PASS}
     });
   }
 }
@@ -32,7 +43,7 @@ export class CPanelTransport implements EmailTransport {
       host: "website.com",
       port: 465,
       secure: true,
-      auth: {user: process.env.CP_USER, pass: process.env.CP_PASS}
+      auth: {user: CP_USER, pass: CP_PASS}
     });
   }
 }

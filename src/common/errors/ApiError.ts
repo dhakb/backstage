@@ -40,7 +40,7 @@ class NotFoundError extends ApiError {
 class ConflictError extends ApiError {
   constructor(message = "Conflict") {
     super(message, 409);
-    Object.setPrototypeOf(this, NotFoundError.prototype);
+    Object.setPrototypeOf(this, ConflictError.prototype);
   }
 }
 

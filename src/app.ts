@@ -3,7 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 
-dotenv.config();
+dotenv.config({path: "./.env"});
+dotenv.config({path: "./.env.backup"});
+
+
+import authRoutes from "./api/routes/auth";
 
 
 const createApp = () => {
@@ -16,6 +20,7 @@ const createApp = () => {
     res.status(200).json({message: "API is healthy!"});
   });
 
+  app.use("/auth", authRoutes);
 
   return app;
 };

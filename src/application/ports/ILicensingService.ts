@@ -1,4 +1,4 @@
-type KeygenApiResponse = { data: {} | null, error: {} | null | undefined }
+type KeygenApiResponse = { data: Record<string, any> | null, error: Record<string, any> | null | undefined }
 
 
 export interface ILicensingService {
@@ -14,4 +14,12 @@ export interface ILicensingService {
   login(credentials: string): Promise<KeygenApiResponse>;
 
   getUserAlt(identifier: string): Promise<KeygenApiResponse>;
+
+  createLicense(data: {
+    name: string;
+    policyId: string;
+    userId: string;
+    metadata: {};
+    maxMachines: string | undefined
+  }): Promise<KeygenApiResponse>;
 }

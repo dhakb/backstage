@@ -134,6 +134,55 @@ export class KeygenLicensingService implements ILicensingService {
     }
   }
 
+  async createLicense(data: {
+    name: string;
+    policyId: string;
+    userId: string;
+    metadata: {};
+    maxMachines: string | undefined
+  }): Promise<KeygenApiResponse> {
+    try {
+      const body = {
+        data: {
+          type: "licenses",
+          attributes: {
+            name: data.name,
+            metadata: data.metadata,
+            maxMachines: data.maxMachines
+          },
+          relationships: {
+            policy: {
+              data: {
+                type: "policies",
+                id: data.policyId
+              }
+            },
+            user: {
+              data: {
+                type: "users",
+                id: data.userId
+              }
+            }
+          }
+        }
+      };
+
+      let response = await axios.post(
+        `${KEYGEN_API_URL}/accounts/${KEYGEN_ACCOUNT_ID}/licenses`,
+        body,
+        KeygenLicensingService.buildAuthHeaders("Bearer")
+      );
+
+      return {data: response.data.data, error: null};
+    } catch (err) {
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) await this.checkKeygenToken();
+
+      return {data: null, error: error.response};
+    }
+  }
+
 
   private static saveNewAdminToken(newToken: string) {
     let envLine = `KEYGEN_ADMIN_TOKEN_BACKUP="${newToken}"`;
